@@ -15,11 +15,18 @@ contract Voting is Ownable {
     function reset(string[] memory _choices) external onlyOwner {
         choices = _choices;
         emptyVoters();
+        emptyVotes();
     }
 
     function emptyVoters() private {
         for (uint i; i < voters.length; i++) {
             voters.pop();
+        }
+    }
+
+    function emptyVotes() private {
+        for (uint i; i < choices.length; i++) {
+            votes[choices[i]] = 0;
         }
     }
 
