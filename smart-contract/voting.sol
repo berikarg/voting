@@ -4,8 +4,8 @@ pragma solidity 0.8.13;
 import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract Voting is Ownable {
-    mapping(string => uint) public votes; // name of cryptocurrency => number of votes
-    mapping(address => string) public whoVotedWhat;
+    mapping(string => uint) public votes; // choice => number of votes
+    address[] public voters;
     string[] public choices;
 
     constructor(string[] memory _choices) {
@@ -14,24 +14,23 @@ contract Voting is Ownable {
 
     function reset(string[] memory _choices) external onlyOwner {
         choices = _choices;
+        emptyVoters();
+    }
 
+    function emptyVoters() private {
+        for (uint i; i < voters.length; i++) {
+            voters.pop();
+        }
     }
 
     function vote(string memory choice) external onlyOnce validChoice(choice){
         votes[choice] += 1;
-        whoVotedWhat[msg.sender] = choice;
+        voters.push(msg.sender);
     }
 
     modifier onlyOnce {
-        require(areStringsEqual(whoVotedWhat[msg.sender], ""));
+        require(!isAddressInArray(voters, msg.sender));
         _;
-    }
-
-    function areStringsEqual(string memory a, string memory b) internal pure returns (bool) {
-        if (bytes(a).length != bytes(b).length) {
-            return false;
-        }
-        return keccak256(abi.encodePacked((a))) == keccak256(abi.encodePacked((b)));
     }
 
     modifier validChoice(string memory choice) {
@@ -42,6 +41,22 @@ contract Voting is Ownable {
     function isStringInArray(string[] memory items, string memory item) internal pure returns (bool) {
         for (uint i = 0; i < items.length; i++) {
             if (areStringsEqual(items[i], item)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function areStringsEqual(string memory a, string memory b) internal pure returns (bool) {
+        if (bytes(a).length != bytes(b).length) {
+            return false;
+        }
+        return keccak256(abi.encodePacked((a))) == keccak256(abi.encodePacked((b)));
+    }
+
+    function isAddressInArray(address[] memory addrs, address addr) internal pure returns (bool) {
+        for (uint i = 0; i < addrs.length; i++) {
+            if (addrs[i] == addr) {
                 return true;
             }
         }
