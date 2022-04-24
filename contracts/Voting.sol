@@ -12,6 +12,10 @@ contract Voting is Ownable {
         choices = _choices;
     }
 
+    function getChoices() external view returns (string[] memory){
+        return choices;
+    }
+
     function reset(string[] memory _choices) external onlyOwner {
         choices = _choices;
         emptyVoters();
