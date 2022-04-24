@@ -2,19 +2,21 @@ const { ethers } = require("hardhat");
 const { expect } = require("chai");
 
 describe("Voting contract", function () {
-  it("Deployment should assign the choices", async function () {
-    const [owner] = await ethers.getSigners();
+  let owner, voter1, voter2, voter3, voter4;
+  beforeEach(async function () {
+    [owner, voter1, voter2, voter3, voter4] = await ethers.getSigners();
 
     const Voting = await ethers.getContractFactory("Voting", owner);
 
-    const deployChoices = ['Biden', 'Trump', 'Obama'];
-    const presidentVoting = await Voting.deploy(deployChoices);
+    this.presidentVoting = await Voting.deploy(['Biden', 'Trump', 'Obama']);
+  })
 
-    const choices = await presidentVoting.getChoices();
+  it("Deployment should assign the choices", async function () {
+    const choices = await this.presidentVoting.getChoices();
 
-    expect(choices.length).to.equal(deployChoices.length);
-    expect(choices[0]).to.equal(deployChoices[0]);
-    expect(choices[1]).to.equal(deployChoices[1]);
-    expect(choices[2]).to.equal(deployChoices[2]);
+    expect(choices.length).to.equal(3);
+    expect(choices[0]).to.equal('Biden');
+    expect(choices[1]).to.equal('Trump');
+    expect(choices[2]).to.equal('Obama');
   });
 });
