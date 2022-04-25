@@ -12,6 +12,10 @@ contract Voting is Ownable {
         choices = _choices;
     }
 
+    function getVoteCount(string memory choice) external view validChoice(choice) returns (uint){
+        return votes[choice];
+    }
+
     function getChoices() external view returns (string[] memory){
         return choices;
     }

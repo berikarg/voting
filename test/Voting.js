@@ -19,4 +19,10 @@ describe("Voting contract", function () {
     expect(choices[1]).to.equal('Trump');
     expect(choices[2]).to.equal('Obama');
   });
+
+  it("A proper vote should be counted", async function () {
+    const voter1Choice = 'Biden' 
+    await this.presidentVoting.connect(voter1).vote(voter1Choice);
+    expect(await this.presidentVoting.getVoteCount[voter1Choice]).to.eq(1);
+  });
 });
