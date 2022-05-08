@@ -25,11 +25,16 @@ describe("Voting contract", function () {
       expect(await this.presidentVoting.owner()).to.eq(owner.address);
     });
 
-    it("A proper vote should be counted", async function () {
+    it("A valid vote should be counted", async function () {
       const voter1Choice = 'Biden';
       await this.presidentVoting.connect(voter1).vote(voter1Choice);
       let voteCount = await this.presidentVoting.getVoteCount(voter1Choice);
       expect(voteCount).to.eq(1);
+    });
+
+    it("An invalid vote should not be counted", async function () {
+      const invalidChoice = 'Berik';
+      await expect(this.presidentVoting.connect(voter1).vote(invalidChoice)).to.be.revertedWith("invalid choice");
     });
   });
 });

@@ -48,12 +48,12 @@ contract Voting is Ownable {
     }
 
     modifier onlyOnce {
-        require(!isAddressInArray(voters, msg.sender));
+        require(!isAddressInArray(voters, msg.sender), "only one vote per address is allowed");
         _;
     }
 
     modifier validChoice(string memory choice) {
-        require(isStringInArray(choices, choice));
+        require(isStringInArray(choices, choice), "invalid choice");
         _;
     }
 
