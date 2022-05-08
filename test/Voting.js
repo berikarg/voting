@@ -32,9 +32,15 @@ describe("Voting contract", function () {
       expect(voteCount).to.eq(1);
     });
 
-    it("An invalid vote should not be counted", async function () {
+    it("An invalid vote should NOT be counted", async function () {
       const invalidChoice = 'Berik';
       await expect(this.presidentVoting.connect(voter1).vote(invalidChoice)).to.be.revertedWith("invalid choice");
+    });
+
+    it("One voter should NOT be able to vote more than once", async function () {
+      const voter1Choice = 'Biden';
+      await this.presidentVoting.connect(voter1).vote(voter1Choice);
+      await expect(this.presidentVoting.connect(voter1).vote(voter1Choice)).to.be.revertedWith("only one vote per address is allowed");
     });
   });
 });
