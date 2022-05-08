@@ -42,5 +42,16 @@ describe("Voting contract", function () {
       await this.presidentVoting.connect(voter1).vote(voter1Choice);
       await expect(this.presidentVoting.connect(voter1).vote(voter1Choice)).to.be.revertedWith("only one vote per address is allowed");
     });
+
+    it("Voters should be recorded", async function () {
+      const voter1Choice = 'Biden';
+      const voter2Choice = 'Obama';
+      await this.presidentVoting.connect(voter1).vote(voter1Choice);
+      await this.presidentVoting.connect(voter2).vote(voter2Choice);
+      let voters = await this.presidentVoting.getVoters();
+      expect(voters.length).to.equal(2);
+      expect(voters[0]).to.equal(voter1.address);
+      expect(voters[1]).to.equal(voter2.address);
+    });
   });
 });
