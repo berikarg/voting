@@ -53,5 +53,31 @@ describe("Voting contract", function () {
       expect(voters[0]).to.equal(voter1.address);
       expect(voters[1]).to.equal(voter2.address);
     });
+
+    it("Voting should be resetable by owner", async function () {
+      await this.presidentVoting.connect(owner).reset(['new', 'choices']);
+      const choices = await this.presidentVoting.getChoices();
+
+      expect(choices.length).to.equal(2);
+      expect(choices[0]).to.equal('new');
+      expect(choices[1]).to.equal('choices');
+    });
+
+    it("Reset should delete old choices", async function () {
+      await this.presidentVoting.connect(owner).reset(['new', 'choices']);
+      await expect(this.presidentVoting.getVoteCount('Obama')).to.be.revertedWith("invalid choice");
+    });
+
+    it("Reset should empty voters list", async function () {
+      await this.presidentVoting.connect(voter1).vote('Biden');
+      await this.presidentVoting.connect(voter2).vote('Obama');
+      let voters = await this.presidentVoting.getVoters();
+      expect(voters.length).to.equal(2);
+
+      
+      await this.presidentVoting.connect(owner).reset(['new', 'choices']);
+      voters = await this.presidentVoting.getVoters();
+      expect(voters.length).to.equal(0);
+    });
   });
 });
